@@ -24,4 +24,30 @@ describe Person do
     earl.reload
     earl.spouse_id.should eq steve.id
   end
+
+  it 'allows you to add parents to a person' do
+    earl = Person.create(:name => 'Earl')
+    steve = Person.create(:name => 'Steve')
+    judy = Person.create(:name => 'Judy')
+    earl.parents << steve
+    earl.parents << judy
+    expect(earl.parents).to eq [steve, judy]
+  end
+
+  it 'allows you to find the grandparents of a person' do
+    earl = Person.create(:name => 'Earl')
+    steve = Person.create(:name => 'Steve')
+    judy = Person.create(:name => 'Judy')
+    rupert = Person.create(:name => 'Rupert')
+    agnes = Person.create(:name => 'Agnes')
+    winthorp = Person.create(:name => 'Winthorp')
+    mildred = Person.create(:name => 'Mildred')
+
+    Relationship.make_connection(:child => earl, :parents => [steve,judy])
+    Relationship.make_connection(:child => steve, :parents => [rupert, agnes])
+    Relationship.make_connection(:child => judy, :parents => [winthorp, mildred])
+
+    expect(earl.grandparents).to eq [[rupert, agnes],[winthorp,mildred]]
+
+  end
 end
